@@ -1,0 +1,31 @@
+inux系统中误删文件恢复很麻烦，有的甚至无法恢复，所以简单实现rm脚本，实现删除文件到“回收站”。实现可以恢复到最后一次删除的文件，电脑重启后linux系统将自动删除“回收站”中的文件目录。实现如下
+
+/usr/local/bin/rm.sh ：
+
+#!/bin/bash
+
+_recyc='/tmp/recycle' 
+test ! -d  $_recyc && mkdir -p $_recyc 
+
+_datedir=`date +"%Y%m%d"` 
+_dstdir=$_recyc/$_datedir 
+test ! -d $_dstdir && mkdir -p $_dstdir
+
+for _parms in $* 
+do 
+        if [ -d $_parms ] || [ -f $_parms ];then 
+                test -d $_parms && echo "$_parms is directory" && mv $_parms $_dstdir/ 
+                test -f $_parms && echo "$_parms is file" && mv $_parms $_dstdir/ 
+        else 
+                echo "$_parms is not directory or file" 
+        fi 
+done
+
+
+
+再在.bashrc文件中增加如下别名配置：
+
+alias rm='/usr/local/bin/rm.sh'
+alias surm='/bin/rm -i'
+
+最后重新载入.bashrc中的配置，实现rm 删除文件到回收站，surm彻底删除文件。
